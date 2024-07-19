@@ -1,0 +1,67 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background-color: #f8b400;
+    padding: 1rem;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+#notification {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: #f8b400;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    display: none;
+}
+
+#contactsList, #shopItems, #friendRequests {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#contactsList > div, #shopItems > div, #friendRequests > div {
+    margin: 0.5rem;
+    text-align: center;
+}
+
+#contactsList img, #shopItems img, #friendRequests img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}

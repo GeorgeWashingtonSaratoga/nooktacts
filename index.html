@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nooktacts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Nooktacts</h1>
+            <nav>
+                <ul>
+                    <li><a href="#chats">Chats</a></li>
+                    <li><a href="#contacts">Contacts</a></li>
+                    <li><a href="#shop">Shop</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                    <li><a href="#requests">Requests</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section id="chats" class="tab-content">
+                <h2>Chats</h2>
+                <div id="chatList">
+                    <!-- Chat messages will go here -->
+                </div>
+            </section>
+            <section id="contacts" class="tab-content">
+                <h2>Contacts</h2>
+                <div id="contactsList">
+                    <!-- Villager contacts will go here -->
+                </div>
+            </section>
+            <section id="shop" class="tab-content">
+                <h2>Shop</h2>
+                <div id="shopItems">
+                    <!-- Shop items will go here -->
+                </div>
+            </section>
+            <section id="profile" class="tab-content">
+                <h2>Profile</h2>
+                <p>Bells: <span id="bellsCount">0</span></p>
+            </section>
+            <section id="requests" class="tab-content">
+                <h2>Requests</h2>
+                <div id="friendRequests">
+                    <!-- Friend requests will go here -->
+                </div>
+                <button id="scanAmiibo">Scan Amiibo</button>
+            </section>
+            <section id="settings" class="tab-content">
+                <h2>Settings</h2>
+                <p>Settings content goes here...</p>
+            </section>
+        </main>
+        <div id="notification"></div>
+    </div>
+    <script src="scripts.js"></script>
+    <script src="villagers.js"></script>
+</body>
+</html>

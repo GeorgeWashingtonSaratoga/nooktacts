@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 amiiboText.textContent = "Scanning Amiibo...";
                 await ndef.scan();
                 ndef.onreading = event => {
-                    navigator. vibrate(500)
+                    navigator.vibrate(500)
                     const decoder = new TextDecoder();
                     for (const record of event.message.records) {
                         if (record.recordType === "text") {
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             addVillagerContact(villagerName);
                             showNotification(`Amiibo scanned! Added ${villagerName} to your contacts.`);
                         }
-                    amiiboText.textContent = record;
+                    amiiboText.textContent = (record + ", " + record.recordType);
                     }
                 };
             } catch (error) {

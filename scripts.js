@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scanAmiiboButton = document.getElementById('scanAmiibo');
     const clearLocalDataButton = document.getElementById("clearLocalData");
     const toggleAmiiboButton = document.getElementById("toggleAmiibo");
+    const amiiboText = document.getElementById("amiiboText");
     const toggleFriendRequestsButton = document.getElementById("toggleFriendRequests");
 
     let newVillagers = [];
@@ -205,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             addVillagerContact(villagerName);
                             showNotification(`Amiibo scanned! Added ${villagerName} to your contacts.`);
                         }
+                    amiiboText.textContent = record;
                     }
                 };
             } catch (error) {

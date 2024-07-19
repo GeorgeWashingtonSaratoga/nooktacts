@@ -4,13 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const notification = document.getElementById('notification');
     const scanAmiiboButton = document.getElementById('scanAmiibo');
     const clearLocalDataButton = document.getElementById("clearLocalData");
-    const localStorageKey = 'nooktactsStartTime';
-    const villagerFriends = 'villagerFriends';
-    const availVillagers = 'availableVillagers';
-    const balance = 'bellBalance';
-    newVillagers = [];
+    const toggleAmiiboButton = document.getElementById("toggleAmiibo");
+    const toggleFriendRequestsButton = document.getElementById("toggleFriendRequests");
+
+    let newVillagers = [];
     let bells = 0;
     let currVillager = {}
+    let amiiboEnabled = true;
+    let friendRequestsEnabled = true;
 
     // Initialize the app
     init();
@@ -19,10 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs.forEach(tab => tab.addEventListener('click', switchTab));
         loadStartTime();
         setInterval(checkForNewFriendRequest, 5000); // Check every minute
-        tempFriends = localStorage.getItem(villagerFriends);
+        scanAmiiboButton.addEventListener('click', scanAmiibo);
+        tempFriends = localStorage.getItem('villagerFriends');
+        tempBells = localStorage.getItem('bellBalance');
         if (tempFriends != null) {
             console.log(tempFriends)
-            tempFriends = JSON.parse(localStorage.getItem(villagerFriends));
+            tempFriends = JSON.parse(localStorage.getItem('villagerFriends'));
             for (var i = 0; i < tempFriends.length; i ++) {
                 tempFren = tempFriends[i]
                 const contactsSection = document.getElementById('contactsList');
@@ -35,6 +38,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(tempFren.name)
             }
         }
+        if (tempBells == null) {
+            tempBells = bells
+            localStorage.setItem('bellBalance', bells.toString())
+        } else {
+            bells = parseInt(localStorage.getItem('bellBalance'));
+        }
+        if (localStorage.getItem("amiiboToggle") == null) {
+            localStorage.setItem("amiiboToggle", amiiboEnabled);
+        } else {
+            amiiboEnabled = localStorage.getItem("amiiboToggle");
+        }
+        if (localStorage.getItem("frenToggle") == null) {
+            localStorage.setItem("frenToggle", friendRequestsEnabled);
+        } else {
+            friendRequestsEnabled = localStorage.getItem("frenToggle");
+        }
+        
     }
 
     function switchTab(event) {
@@ -46,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadStartTime() {
-        let startTime = localStorage.getItem(localStorageKey);
+        let startTime = localStorage.getItem('nooktactsStartTime');
         if (!startTime) {
             startTime = Date.now();
-            localStorage.setItem(localStorageKey, startTime);
+            localStorage.setItem('nooktactsStartTime', startTime);
         }
     }
 
@@ -58,31 +78,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkForNewFriendRequest() {
-        const elapsedTime = Date.now() - localStorage.getItem(localStorageKey);
-        if (elapsedTime > 5000) { // more than 1 minute has passed
-            showNotification('You have a new friend request!');
-            bells += getRandomInt(250); // Example amount of bells
-            updateBellsCount();
-            villager = {};
-            tempVillagers = localStorage.getItem(availVillagers);
-            if (tempVillagers == null) {
-                newVillagers = villagers;
-                ranNum = getRandomInt(newVillagers.length);
-                villager = newVillagers[ranNum];
-                addFriendRequest(villager);
-                newVillagers.splice(ranNum, 1);
-                tempVillagers = newVillagers
-            } else {
-                tempVillagers = JSON.parse(localStorage.getItem(availVillagers));
-                console.log(tempVillagers)
-                newVillagers = tempVillagers
-                ranNum = getRandomInt(newVillagers.length);
-                villager = newVillagers[ranNum];
-                addFriendRequest(villager);
-                newVillagers.splice(ranNum, 1);
-                tempVillagers = newVillagers
+        if (friendRequestsEnabled == true) {
+            const elapsedTime = Date.now() - localStorage.getItem('nooktactsStartTime');
+            if (elapsedTime > 5000) { // more than 1 minute has passed
+                showNotification('You have a new friend request!');
+                villager = {};
+                tempVillagers = localStorage.getItem('availableVillagers');
+                if (tempVillagers == null) {
+                    newVillagers = villagers;
+                    ranNum = getRandomInt(newVillagers.length);
+                    villager = newVillagers[ranNum];
+                    addFriendRequest(villager);
+                    newVillagers.splice(ranNum, 1);
+                    tempVillagers = newVillagers
+                } else {
+                    tempVillagers = JSON.parse(localStorage.getItem('availableVillagers'));
+                    console.log(tempVillagers)
+                    newVillagers = tempVillagers
+                    ranNum = getRandomInt(newVillagers.length);
+                    villager = newVillagers[ranNum];
+                    addFriendRequest(villager);
+                    newVillagers.splice(ranNum, 1);
+                    tempVillagers = newVillagers
+                }
+                localStorage.setItem('availableVillagers', JSON.stringify(tempVillagers));
             }
-            localStorage.setItem(availVillagers, JSON.stringify(tempVillagers));
         }
     }
 
@@ -91,16 +111,19 @@ document.addEventListener('DOMContentLoaded', () => {
         notification.style.display = 'block';
         setTimeout(() => {
             notification.style.display = 'none';
-        }, 5000);
+        }, 4000);
     }
 
     function updateBellsCount() {
         document.getElementById('bellsCount').textContent = bells;
+        localStorage.setItem('bellBalance', bells.toString())
     }
 
     function addFriendRequest(villagerReq) {
         const friendRequestsSection = document.getElementById('friendRequests');
         const villagerContainer = document.createElement('div');
+        bells += getRandomInt(250); // Example amount of bells
+        updateBellsCount();
         villagerContainer.id = villagerReq.name;
         currVillager = villagerReq;
         villagerContainer.innerHTML = `
@@ -127,14 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>${nameCon}</p>
             `;
             contactsSection.appendChild(villagerContainer);
-            tempContacts = JSON.parse(localStorage.getItem(villagerFriends));
+            tempContacts = JSON.parse(localStorage.getItem('villagerFriends'));
             if (tempContacts) {
                 tempContacts.push(villagerCon);
             } else {
                 tempContacts = [];
                 tempContacts.push(villagerCon);
             }
-            localStorage.setItem(villagerFriends, JSON.stringify(tempContacts));
+            localStorage.setItem('villagerFriends', JSON.stringify(tempContacts));
         } else {
             console.log("Find command did not work")
             const contactsSection = document.getElementById('contactsList');
@@ -148,13 +171,45 @@ document.addEventListener('DOMContentLoaded', () => {
         currVillager = {};
     }
     clearLocalDataButton.addEventListener("click", () => {
-        console.log(localStorage.getItem(localStorageKey));
-        console.log(localStorage.getItem(villagerFriends));
-        console.log(localStorage.getItem(availVillagers));
         localStorage.clear();
-        showNotification("Local data cleared. Please refresh your page.");
-        console.log(localStorage.getItem(localStorageKey));
-        console.log(localStorage.getItem(villagerFriends));
-        console.log(localStorage.getItem(availVillagers));
+        showNotification("Local data cleared. Page will be refreshed shortly.");
+        location.reload();
+
     });
+
+    toggleAmiiboButton.addEventListener("click", () => {
+        amiiboEnabled = !amiiboEnabled;
+        showNotification(`Amiibo integration ${amiiboEnabled ? "enabled" : "disabled"}`);
+        localStorage.setItem("amiiboToggle", amiiboEnabled);
+    });
+
+    toggleFriendRequestsButton.addEventListener("click", () => {
+        friendRequestsEnabled = !friendRequestsEnabled;
+        showNotification(`Friend requests ${friendRequestsEnabled ? "enabled" : "disabled"}`);
+        localStorage.setItem("frenToggle", friendRequestsEnabled)
+    });
+
+    async function scanAmiibo() {
+        if (!amiiboEnabled) {
+            showNotification("Amiibo integration is disabled");
+            return;
+        } else {
+            try {
+                const ndef = new NDEFReader();
+                await ndef.scan();
+                ndef.onreading = event => {
+                    const decoder = new TextDecoder();
+                    for (const record of event.message.records) {
+                        if (record.recordType === "text") {
+                            const villagerName = decoder.decode(record.data);
+                            addVillagerContact(villagerName);
+                            showNotification(`Amiibo scanned! Added ${villagerName} to your contacts.`);
+                        }
+                    }
+                };
+            } catch (error) {
+                showNotification(`Error scanning Amiibo: ${error}`);
+            }
+        }
+    }
 });

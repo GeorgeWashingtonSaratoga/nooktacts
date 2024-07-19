@@ -3,9 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabContents = document.querySelectorAll('.tab-content');
     const notification = document.getElementById('notification');
     const scanAmiiboButton = document.getElementById('scanAmiibo');
+    const clearLocalDataButton = document.getElementById("clearLocalData");
     const localStorageKey = 'nooktactsStartTime';
     const villagerFriends = 'villagerFriends';
-    newVillagers = villagers;
+    const availVillagers = 'availableVillagers';
+    const balance = 'bellBalance';
+    newVillagers = [];
     let bells = 0;
     let currVillager = {}
 
@@ -15,7 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function init() {
         tabs.forEach(tab => tab.addEventListener('click', switchTab));
         loadStartTime();
-        setInterval(checkForNewFriendRequest, 60000); // Check every minute
+        setInterval(checkForNewFriendRequest, 5000); // Check every minute
+        tempFriends = localStorage.getItem(villagerFriends);
+        if (tempFriends != null) {
+            console.log(tempFriends)
+            tempFriends = JSON.parse(localStorage.getItem(villagerFriends));
+            for (var i = 0; i < tempFriends.length; i ++) {
+                tempFren = tempFriends[i]
+                const contactsSection = document.getElementById('contactsList');
+                const villagerContainer = document.createElement('div');
+                villagerContainer.innerHTML = `
+                <img src="${tempFren.icon}" alt="${tempFren.name}">
+                <p>${tempFren.name}</p>
+                `;
+                contactsSection.appendChild(villagerContainer);
+                console.log(tempFren.name)
+            }
+        }
     }
 
     function switchTab(event) {
@@ -40,15 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkForNewFriendRequest() {
         const elapsedTime = Date.now() - localStorage.getItem(localStorageKey);
-        if (elapsedTime > 60000) { // more than 1 minute has passed
+        if (elapsedTime > 5000) { // more than 1 minute has passed
             showNotification('You have a new friend request!');
             bells += getRandomInt(250); // Example amount of bells
             updateBellsCount();
             villager = {};
-            ranNum = getRandomInt(newVillagers.length);
-            villager = newVillagers[ranNum];
-            addFriendRequest(villager);
-            newVillagers.splice(ranNum, 1);
+            tempVillagers = localStorage.getItem(availVillagers);
+            if (tempVillagers == null) {
+                newVillagers = villagers;
+                ranNum = getRandomInt(newVillagers.length);
+                villager = newVillagers[ranNum];
+                addFriendRequest(villager);
+                newVillagers.splice(ranNum, 1);
+                tempVillagers = newVillagers
+            } else {
+                tempVillagers = JSON.parse(localStorage.getItem(availVillagers));
+                console.log(tempVillagers)
+                newVillagers = tempVillagers
+                ranNum = getRandomInt(newVillagers.length);
+                villager = newVillagers[ranNum];
+                addFriendRequest(villager);
+                newVillagers.splice(ranNum, 1);
+                tempVillagers = newVillagers
+            }
+            localStorage.setItem(availVillagers, JSON.stringify(tempVillagers));
         }
     }
 
@@ -85,9 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addVillagerContact(nameCon) {
         villagerCon = currVillager;
-        console.log(nameCon)
-        console.log(villagers)
-        console.log(villagerCon)
         if (villagerCon) {
             const contactsSection = document.getElementById('contactsList');
             const villagerContainer = document.createElement('div');
@@ -96,6 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>${nameCon}</p>
             `;
             contactsSection.appendChild(villagerContainer);
+            tempContacts = JSON.parse(localStorage.getItem(villagerFriends));
+            if (tempContacts) {
+                tempContacts.push(villagerCon);
+            } else {
+                tempContacts = [];
+                tempContacts.push(villagerCon);
+            }
+            localStorage.setItem(villagerFriends, JSON.stringify(tempContacts));
         } else {
             console.log("Find command did not work")
             const contactsSection = document.getElementById('contactsList');
@@ -108,4 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         currVillager = {};
     }
+    clearLocalDataButton.addEventListener("click", () => {
+        console.log(localStorage.getItem(localStorageKey));
+        console.log(localStorage.getItem(villagerFriends));
+        console.log(localStorage.getItem(availVillagers));
+        localStorage.clear();
+        showNotification("Local data cleared. Please refresh your page.");
+        console.log(localStorage.getItem(localStorageKey));
+        console.log(localStorage.getItem(villagerFriends));
+        console.log(localStorage.getItem(availVillagers));
+    });
 });

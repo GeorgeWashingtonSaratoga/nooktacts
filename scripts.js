@@ -197,8 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             try {
                 const ndef = new NDEFReader();
+                amiiboText.textContent = "Scanning Amiibo...";
                 await ndef.scan();
                 ndef.onreading = event => {
+                    navigator. vibrate(500)
                     const decoder = new TextDecoder();
                     for (const record of event.message.records) {
                         if (record.recordType === "text") {
